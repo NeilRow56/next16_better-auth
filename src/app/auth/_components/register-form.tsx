@@ -20,6 +20,8 @@ import { Field, FieldGroup } from '@/components/ui/field'
 import { FormInput, FormPasswordInput } from '@/components/form/form-base'
 import { passwordSchema } from '@/zod-schemas/password'
 import { LoadingSwap } from '@/components/shared/loading-swap'
+import { signUp } from '@/server-actions/users'
+import { useRouter } from 'next/navigation'
 
 const registerSchema = z
   .object({
@@ -47,7 +49,9 @@ interface RegisterFormProps {
   onSuccess?: () => void
 }
 
-export function RegisterForm() {
+export function RegisterForm({ onSuccess }: RegisterFormProps) {
+  const router = useRouter()
+
   const form = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -60,21 +64,21 @@ export function RegisterForm() {
 
   const { isSubmitting } = form.formState
 
-  function onSubmit(data: z.infer<typeof registerSchema>) {
-    toast('You submitted the following values:', {
-      description: (
-        <pre className='bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4'>
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: 'bottom-right',
-      classNames: {
-        content: 'flex flex-col gap-2'
-      },
-      style: {
-        '--border-radius': 'calc(var(--radius)  + 4px)'
-      } as React.CSSProperties
-    })
+  async function onSubmit(values: RegisterSchemaType) {
+    const { success, message } = await signUp(
+      values.email,
+      values.password,
+      values.name
+    )
+
+    if (success) {
+      toast.success(
+        `${message as string} Please check your email for verification.`
+      )
+      router.push('/')
+    } else {
+      toast.error(message as string)
+    }
   }
 
   return (
