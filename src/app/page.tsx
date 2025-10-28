@@ -1,10 +1,14 @@
-import { SignOutButton } from './auth/_components/sign-out-button'
+import { Suspense } from 'react'
+import HomeView from '@/components/home/home-view'
 
-export default function Home() {
+import Loader from '@/components/loader'
+
+export default async function Home() {
   return (
-    <div className='container mx-auto mt-24 flex flex-col space-y-8 text-center'>
-      <h1>Home page</h1>
-      <SignOutButton />
+    <div className='mx-auto my-6 max-w-md px-4'>
+      <Suspense fallback={<Loader />}>
+        <HomeView />
+      </Suspense>
     </div>
   )
 }

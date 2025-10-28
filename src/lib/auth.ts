@@ -1,3 +1,4 @@
+import ForgotPasswordEmail from '@/components/emails/reset-password'
 import VerifyEmail from '@/components/emails/verify-email'
 import { db } from '@/db'
 import { betterAuth } from 'better-auth'
@@ -22,9 +23,27 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      resend.emails.send({
+        from: `${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`,
+        to: user.email,
+        subject: 'Reset your password',
+        react: ForgotPasswordEmail({
+          username: user.name,
+          resetUrl: url,
+          userEmail: user.email
+        })
+      })
+    },
     requireEmailVerification: true
   },
-
+  session: {
+    expiresIn: 30 * 24 * 60 * 60 * 2, // 60 days - default is 7 days
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60
+    }
+  },
   database: drizzleAdapter(db, {
     provider: 'pg'
   }),

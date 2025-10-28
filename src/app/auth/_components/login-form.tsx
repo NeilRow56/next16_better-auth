@@ -22,6 +22,7 @@ import { FormInput, FormPasswordInput } from '@/components/form/form-base'
 import { LoadingSwap } from '@/components/shared/loading-swap'
 import { signIn } from '@/server-actions/users'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 const loginSchema = z.object({
   email: z.email('Please enter a valid email address!'),
@@ -50,7 +51,7 @@ export function LoginForm() {
       toast.success(message as string)
       router.push('/dashboard')
     } else {
-      toast.error(message as string)
+      toast.error((message as string) || 'Failed to sign up')
     }
   }
 
@@ -93,6 +94,14 @@ export function LoginForm() {
           </Button>
         </Field>
       </CardFooter>
+      <div className='px-6'>
+        <Link
+          href='/auth/forgot-password'
+          className='ml-auto text-sm text-blue-600 underline-offset-4 hover:underline'
+        >
+          <span className='dark:text-blue-300'>Forgot your password?</span>
+        </Link>
+      </div>
     </Card>
   )
 }

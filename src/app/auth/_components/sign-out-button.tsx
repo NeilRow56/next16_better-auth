@@ -34,8 +34,9 @@ export const SignOutButton = () => {
 
   return (
     <Button
+      className='w-20'
       onClick={handleClick}
-      size='sm'
+      size='default'
       variant='destructive'
       disabled={isPending}
     >
