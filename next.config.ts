@@ -10,8 +10,13 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'w0mlmrgwbziwquaq.public.blob.vercel-storage.com'
       },
-      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        pathname: 'u/**'
+      },
       { protocol: 'https', hostname: 'static.vecteezy.com' },
+      { protocol: 'https', hostname: 'avatar.githubusercontent.com' },
       { protocol: 'https', hostname: 'avatar.vercel.sh' },
       { protocol: 'https', hostname: 'utfs.io' },
       { protocol: 'https', hostname: 'res.cloudinary.com' },

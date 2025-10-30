@@ -111,12 +111,12 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           </FieldGroup>
         </form>
       </CardContent>
-      <CardFooter className='max-w-[320px]'>
-        <Field orientation='horizontal'>
+      <CardFooter className=''>
+        <Field orientation='horizontal' className='justify-between'>
           <Button
             type='submit'
             form='registration-form'
-            className='w-full cursor-pointer dark:bg-blue-600 dark:text-white'
+            className='w-full max-w-[150px] cursor-pointer dark:bg-blue-600 dark:text-white'
             disabled={isSubmitting}
           >
             <LoadingSwap isLoading={isSubmitting}>Sign in</LoadingSwap>

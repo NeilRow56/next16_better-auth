@@ -6,7 +6,7 @@ import Loader from '@/components/loader'
 export default async function Home() {
   return (
     <div className='mx-auto my-6 max-w-md px-4'>
-      <Suspense fallback={<Loader />}>
+      <Suspense>
         <HomeView />
       </Suspense>
     </div>

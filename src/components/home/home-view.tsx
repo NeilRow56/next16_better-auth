@@ -4,8 +4,6 @@ import { SignOutButton } from '@/app/auth/_components/sign-out-button'
 
 import { redirect } from 'next/navigation'
 import { getServerSession } from '@/lib/get-session'
-import { auth } from '@/lib/auth'
-import { headers } from 'next/headers'
 
 export default async function HomeView() {
   const session = await getServerSession()
