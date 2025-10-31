@@ -62,8 +62,8 @@ export function ChangePasswordForm() {
       <CardHeader className='text-center'>
         <CardTitle className='text-primary'>Reset Password?</CardTitle>
         <CardDescription>
-          Please enter your current password. A link will be sent to reset your
-          password.
+          Please enter your current and new passwords. A link will be sent to
+          reset your password.
         </CardDescription>
       </CardHeader>
       <CardContent className='flex w-full p-6'>

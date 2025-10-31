@@ -14,6 +14,9 @@ import { ProfileUpdateForm } from './_components/profile-update-form'
 
 import { LoadingSuspense } from '@/components/shared/loading-suspense'
 import { ChangePasswordForm } from './_components/change-password-form'
+import { auth } from '@/lib/auth'
+import { headers } from 'next/headers'
+import { SessionManagement } from './_components/session-management'
 
 export default async function ProfilePage() {
   return (
@@ -94,7 +97,11 @@ async function ProfileComponent() {
             <SecurityTab />
           </LoadingSuspense>
         </TabsContent>
-        <TabsContent value='sessions'></TabsContent>
+        <TabsContent value='sessions'>
+          <LoadingSuspense>
+            <SessionsTab currentSessionToken={session.session.token} />
+          </LoadingSuspense>
+        </TabsContent>
 
         <TabsContent value='danger'>
           <Card className='border-destructive border'>
@@ -111,4 +118,23 @@ async function ProfileComponent() {
 
 async function SecurityTab() {
   return <ChangePasswordForm />
+}
+
+async function SessionsTab({
+  currentSessionToken
+}: {
+  currentSessionToken: string
+}) {
+  const sessions = await auth.api.listSessions({ headers: await headers() })
+
+  return (
+    <Card>
+      <CardContent>
+        <SessionManagement
+          sessions={sessions}
+          currentSessionToken={currentSessionToken}
+        />
+      </CardContent>
+    </Card>
+  )
 }
