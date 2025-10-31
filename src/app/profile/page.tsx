@@ -12,6 +12,9 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from '@/lib/get-session'
 import { ProfileUpdateForm } from './_components/profile-update-form'
 
+import { LoadingSuspense } from '@/components/shared/loading-suspense'
+import { ChangePasswordForm } from './_components/change-password-form'
+
 export default async function ProfilePage() {
   return (
     <div className='mx-auto my-6 max-w-md px-4'>
@@ -27,7 +30,7 @@ async function ProfileComponent() {
   if (session == null) return redirect('/auth')
 
   return (
-    <div className='mx-auto my-12 max-w-4xl px-4'>
+    <div className='mx-auto my-12 w-[350px] px-4 md:w-[500px]'>
       <div className='mb-16'>
         <Link href='/' className='mt-12 mb-6 inline-flex items-center'>
           <ArrowLeftIcon suppressHydrationWarning className='mr-2 size-4' />
@@ -61,10 +64,14 @@ async function ProfileComponent() {
       </div>
       {/*  */}
       <Tabs className='space-y-2' defaultValue='profile'>
-        <TabsList className='grid w-full grid-cols-3'>
+        <TabsList className='grid w-full grid-cols-4'>
           <TabsTrigger value='profile' className='px-2'>
             <User />
             <span className='max-sm:hidden'>Profile</span>
+          </TabsTrigger>
+          <TabsTrigger value='security' className='px-2'>
+            <User />
+            <span className='max-sm:hidden'>Security</span>
           </TabsTrigger>
 
           <TabsTrigger value='sessions' className='px-2'>
@@ -79,9 +86,14 @@ async function ProfileComponent() {
         </TabsList>
 
         <TabsContent value='profile'>
-          <ProfileUpdateForm />
+          <ProfileUpdateForm user={session.user} />
         </TabsContent>
 
+        <TabsContent value='security'>
+          <LoadingSuspense>
+            <SecurityTab />
+          </LoadingSuspense>
+        </TabsContent>
         <TabsContent value='sessions'></TabsContent>
 
         <TabsContent value='danger'>
@@ -95,4 +107,8 @@ async function ProfileComponent() {
       </Tabs>
     </div>
   )
+}
+
+async function SecurityTab() {
+  return <ChangePasswordForm />
 }

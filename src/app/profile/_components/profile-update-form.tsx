@@ -18,6 +18,8 @@ import { Field, FieldGroup } from '@/components/ui/field'
 
 import { FormInput } from '@/components/form/form-base'
 import { LoadingSwap } from '@/components/shared/loading-swap'
+import { useRouter } from 'next/navigation'
+import { changeEmail, updateUser } from '@/lib/auth-client'
 
 const profileSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
@@ -26,47 +28,77 @@ const profileSchema = z.object({
 
 type ProfileSchemaType = z.infer<typeof profileSchema>
 
-interface RegisterFormProps {
+interface ProfileUpdateFormProps {
   onSuccess?: () => void
 }
 
-export function ProfileUpdateForm() {
-  const form = useForm<z.infer<typeof profileSchema>>({
+export function ProfileUpdateForm({
+  user
+}: {
+  user: {
+    email: string
+    name: string
+  }
+}) {
+  const router = useRouter()
+  const form = useForm<ProfileSchemaType>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: '',
-      email: ''
-    }
+    defaultValues: user
   })
   const { isSubmitting } = form.formState
 
-  function onSubmit(data: ProfileSchemaType) {
-    toast('You submitted the following values:', {
-      description: (
-        <pre className='bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4'>
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: 'bottom-right',
-      classNames: {
-        content: 'flex flex-col gap-2'
-      },
-      style: {
-        '--border-radius': 'calc(var(--radius)  + 4px)'
-      } as React.CSSProperties
-    })
+  async function handleProfileUpdate(data: ProfileSchemaType) {
+    const promises = [
+      updateUser({
+        name: data.name
+      })
+    ]
+
+    if (data.email !== user.email) {
+      promises.push(
+        changeEmail({
+          newEmail: data.email,
+          callbackURL: '/profile'
+        })
+      )
+    }
+
+    const res = await Promise.all(promises)
+
+    const updateUserResult = res[0]
+    const emailResult = res[1] ?? { error: false }
+
+    if (updateUserResult.error) {
+      toast.error(updateUserResult.error.message || 'Failed to update profile')
+    } else if (emailResult.error) {
+      toast.error(emailResult.error.message || 'Failed to change email')
+    } else {
+      if (data.email !== user.email) {
+        toast.success('Verify your new email address to complete the change.')
+      } else {
+        toast.success('Profile updated successfully')
+      }
+      router.refresh()
+    }
   }
 
   return (
-    <Card className='w-full sm:max-w-md'>
+    <Card className='w-full sm:max-w-[465px]'>
       <CardHeader className='text-center'>
         <CardTitle>Update your account</CardTitle>
       </CardHeader>
       <CardContent>
-        <form id='profile-update-form' onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          id='profile-update-form'
+          onSubmit={form.handleSubmit(handleProfileUpdate)}
+        >
           <FieldGroup>
             <FormInput control={form.control} name='name' label='Name' />
             <FormInput control={form.control} name='email' label='Email' />
+            <h3 className='text-xs text-red-600'>
+              A request to change email will need to be verified from your
+              existing email address and new email address.
+            </h3>
           </FieldGroup>
         </form>
       </CardContent>

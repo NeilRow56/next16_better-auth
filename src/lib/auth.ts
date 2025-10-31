@@ -1,3 +1,4 @@
+import VerifyChangeEmail from '@/components/emails/change-email'
 import ForgotPasswordEmail from '@/components/emails/reset-password'
 import VerifyEmail from '@/components/emails/verify-email'
 import { db } from '@/db'
@@ -36,6 +37,19 @@ export const auth = betterAuth({
       })
     },
     requireEmailVerification: true
+  },
+  user: {
+    changeEmail: {
+      enabled: true,
+      async sendChangeEmailVerification({ user, newEmail, url }) {
+        resend.emails.send({
+          from: `${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`,
+          to: user.email,
+          subject: 'Reset your email',
+          react: VerifyChangeEmail({ newEmail, verifyUrl: url })
+        })
+      }
+    }
   },
   session: {
     expiresIn: 30 * 24 * 60 * 60 * 2, // 60 days - default is 7 days

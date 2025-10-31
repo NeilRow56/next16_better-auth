@@ -20,76 +20,41 @@ import { FormCheckbox, FormPasswordInput } from '@/components/form/form-base'
 
 import { z } from 'zod/v4'
 import { toast } from 'sonner'
-import { useState } from 'react'
 
 import { LoadingSwap } from '@/components/shared/loading-swap'
-import { changePassword, resetPassword } from '@/lib/auth-client'
+import { changePassword } from '@/lib/auth-client'
 import { passwordSchema } from '@/zod-schemas/password'
-import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
 
-const resetPasswordSchema = z.object({
-  password: passwordSchema
+const changePasswordSchema = z.object({
+  currentPassword: passwordSchema,
+  newPassword: passwordSchema,
+  revokeOtherSessions: z.boolean()
 })
 
-type ResetPasswordFormType = z.infer<typeof resetPasswordSchema>
+type ChangePasswordFormType = z.infer<typeof changePasswordSchema>
 
-export function ResetPasswordForm() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const token = searchParams.get('token')
-  const error = searchParams.get('error')
-  const form = useForm<ResetPasswordFormType>({
-    resolver: zodResolver(resetPasswordSchema),
+export function ChangePasswordForm() {
+  const form = useForm<ChangePasswordFormType>({
+    resolver: zodResolver(changePasswordSchema),
     defaultValues: {
-      password: ''
+      currentPassword: '',
+      newPassword: '',
+      revokeOtherSessions: true
     }
   })
 
   const { isSubmitting } = form.formState
 
-  async function handleResetPassword(values: ResetPasswordFormType) {
-    if (token == null) return
-
-    await resetPassword(
-      {
-        newPassword: values.password,
-        token
+  async function handlePasswordChange(values: ChangePasswordFormType) {
+    await changePassword(values, {
+      onError: error => {
+        toast.error(error.error.message || 'Failed to change password')
       },
-      {
-        onError: error => {
-          toast.error(error.error.message || 'Failed to reset password')
-        },
-        onSuccess: () => {
-          toast.success('Password reset successful', {
-            description: 'Redirection to login...'
-          })
-          setTimeout(() => {
-            router.push('/auth')
-          }, 1000)
-        }
+      onSuccess: () => {
+        toast.success('Password changed successfully')
+        form.reset()
       }
-    )
-  }
-
-  if (token == null || error != null) {
-    return (
-      <div className='my-6 px-4'>
-        <Card className='mx-auto w-full max-w-md'>
-          <CardHeader>
-            <CardTitle>Invalid Reset Link</CardTitle>
-            <CardDescription>
-              The password reset link is invalid or has expired.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button className='w-full' asChild>
-              <Link href='/auth/login'>Back to Login</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    )
+    })
   }
 
   return (
@@ -104,13 +69,18 @@ export function ResetPasswordForm() {
       <CardContent className='flex w-full p-6'>
         <form
           id='reset-password-form'
-          onSubmit={form.handleSubmit(handleResetPassword)}
+          onSubmit={form.handleSubmit(handlePasswordChange)}
         >
           <FieldGroup className='w-[200px] md:min-w-[348px]'>
             <FormPasswordInput
               control={form.control}
-              name='password'
-              label='Password'
+              name='currentPassword'
+              label='Current Password'
+            />
+            <FormPasswordInput
+              control={form.control}
+              name='newPassword'
+              label='New Password'
             />
 
             <div>
@@ -119,14 +89,25 @@ export function ResetPasswordForm() {
               </h3>
             </div>
           </FieldGroup>
+          <div className='mt-4'>
+            <FieldSet>
+              <FieldGroup data-slot='checkbox-group'>
+                <FormCheckbox
+                  name='revokeOtherSessions'
+                  control={form.control}
+                  label='Log out other sessions'
+                />
+              </FieldGroup>
+            </FieldSet>
+          </div>
         </form>
       </CardContent>
-      <CardFooter className='flex max-w-40 md:max-w-[390px]'>
-        <Field orientation='horizontal' className='justify-between'>
+      <CardFooter className='max-w-40 md:max-w-[310px]'>
+        <Field orientation='horizontal'>
           <Button
             type='submit'
             form='reset-password-form'
-            className='w-full max-w-[150px] cursor-pointer dark:bg-blue-600 dark:text-white'
+            className='w-full cursor-pointer dark:bg-blue-600 dark:text-white'
             disabled={isSubmitting}
           >
             <LoadingSwap isLoading={isSubmitting}>Submit</LoadingSwap>

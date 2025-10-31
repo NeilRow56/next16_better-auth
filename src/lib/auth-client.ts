@@ -13,6 +13,7 @@ export const {
   revokeOtherSessions,
   revokeSession,
   forgetPassword,
+  changePassword,
   resetPassword,
   updateUser,
   changeEmail,

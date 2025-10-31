@@ -76,6 +76,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         `${message as string} Please check your email for verification.`
       )
       router.push('/')
+      form.reset()
     } else {
       toast.error(message as string)
     }

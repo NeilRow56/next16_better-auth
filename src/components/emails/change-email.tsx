@@ -11,14 +11,15 @@ import {
   Tailwind
 } from '@react-email/components'
 import { APP_ADDRESS1, APP_ADDRESS2, APP_NAME } from '@/lib/constants'
+import Link from 'next/link'
 
 interface VerifyEmailProps {
-  username: string
   verifyUrl: string
+  newEmail: string
 }
 
-const VerifyEmail = (props: VerifyEmailProps) => {
-  const { username, verifyUrl } = props
+const VerifyChangeEmail = (props: VerifyEmailProps) => {
+  const { verifyUrl, newEmail } = props
   return (
     <Html lang='en' dir='ltr'>
       <Tailwind>
@@ -31,9 +32,9 @@ const VerifyEmail = (props: VerifyEmailProps) => {
               </Text>
 
               <Text className='mt-0 mb-6 text-[16px] leading-6 text-gray-700'>
-                Thanks {username} for signing up! To complete your registration
-                and secure your account, please verify your email address by
-                clicking the button below.
+                A request has been made to change your email address to{' '}
+                {newEmail}. To complete the change and secure your account,
+                please verify your email address by clicking the button below.
               </Text>
 
               <Section className='mb-8 text-center'>
@@ -86,4 +87,4 @@ const VerifyEmail = (props: VerifyEmailProps) => {
   )
 }
 
-export default VerifyEmail
+export default VerifyChangeEmail

@@ -1,16 +1,16 @@
 import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldError,
-  FieldLabel
-} from '@/components/ui/field'
-import {
   Controller,
   ControllerProps,
   FieldPath,
   FieldValues
 } from 'react-hook-form'
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldError,
+  FieldLabel
+} from '../ui/field'
 import { Input } from '../ui/input'
 import { ReactNode, useState } from 'react'
 import { Textarea } from '../ui/textarea'
@@ -19,7 +19,7 @@ import { Checkbox } from '../ui/checkbox'
 import { Button } from '../ui/button'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
-export type FormControlProps<
+type FormControlProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   TTransformedValues = TFieldValues
@@ -81,16 +81,15 @@ function FormBase<
             {description && <FieldDescription>{description}</FieldDescription>}
           </>
         )
-
         const control = children({
           ...field,
           id: field.name,
           'aria-invalid': fieldState.invalid
         })
-
-        const errorElement = fieldState.invalid && (
+        const errorElem = fieldState.invalid && (
           <FieldError errors={[fieldState.error]} />
         )
+
         return (
           <Field
             data-invalid={fieldState.invalid}
@@ -101,16 +100,14 @@ function FormBase<
                 {control}
                 <FieldContent>
                   {labelElement}
-                  {errorElement}
+                  {errorElem}
                 </FieldContent>
-                {labelElement}
               </>
             ) : (
               <>
-                <FieldContent className='text-primary'>
-                  {labelElement}
-                </FieldContent>{' '}
-                {control} {errorElement}
+                <FieldContent>{labelElement}</FieldContent>
+                {control}
+                {errorElem}
               </>
             )}
           </Field>
@@ -121,12 +118,9 @@ function FormBase<
 }
 
 export const FormInput: FormControlFunc = props => {
-  return (
-    <FormBase {...props}>
-      {field => <Input {...field} autoComplete='off' />}
-    </FormBase>
-  )
+  return <FormBase {...props}>{field => <Input {...field} />}</FormBase>
 }
+
 export const FormPasswordInput: FormControlFunc = props => {
   const [showPassword, setShowPassword] = useState(false)
   const Icon = showPassword ? EyeOffIcon : EyeIcon
@@ -157,13 +151,11 @@ export const FormPasswordInput: FormControlFunc = props => {
     </FormBase>
   )
 }
+
 export const FormTextarea: FormControlFunc = props => {
-  return (
-    <FormBase {...props}>
-      {field => <Textarea {...field} autoComplete='off' />}
-    </FormBase>
-  )
+  return <FormBase {...props}>{field => <Textarea {...field} />}</FormBase>
 }
+
 export const FormSelect: FormControlFunc<{ children: ReactNode }> = ({
   children,
   ...props
