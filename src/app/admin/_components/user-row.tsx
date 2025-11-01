@@ -131,7 +131,9 @@ export function UserRow({
           {user.role}
         </Badge>
       </TableCell>
-      <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+      <TableCell>
+        {new Date(user.createdAt).toLocaleDateString('en-GB')}
+      </TableCell>
       <TableCell>
         {!isSelf && (
           <AlertDialog>
