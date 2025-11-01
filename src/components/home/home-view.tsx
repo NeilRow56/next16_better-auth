@@ -1,16 +1,26 @@
+'use client'
+
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import { SignOutButton } from '@/app/auth/_components/sign-out-button'
 
-import { redirect } from 'next/navigation'
-import { getServerSession } from '@/lib/get-session'
+import { useEffect, useState } from 'react'
+import { authClient } from '@/lib/auth-client'
 
-export default async function HomeView() {
-  const session = await getServerSession()
+export default function HomeView() {
+  const [hasAdminPermission, setHasAdminPermission] = useState(false)
+  const { data: session, isPending: loading } = authClient.useSession()
 
   const user = session?.user
 
-  if (!user) redirect('/auth')
+  useEffect(() => {
+    authClient.admin
+      .hasPermission({ permission: { user: ['list'] } })
+      .then(({ data }) => {
+        setHasAdminPermission(data?.success ?? false)
+      })
+  }, [])
+
   return (
     <div className='space-y-6 text-center'>
       {user == null ? (
@@ -27,12 +37,13 @@ export default async function HomeView() {
             <Button asChild size='default'>
               <Link href='/profile'>Profile</Link>
             </Button>
+            {hasAdminPermission && (
+              <Button variant='outline' asChild size='lg'>
+                <Link href='/admin'>Admin</Link>
+              </Button>
+            )}
             <Button asChild size='default' variant='outline'>
               <Link href='/organizations'>Organizations</Link>
-            </Button>
-
-            <Button variant='outline' asChild size='default'>
-              <Link href='/admin'>Admin</Link>
             </Button>
 
             <SignOutButton />

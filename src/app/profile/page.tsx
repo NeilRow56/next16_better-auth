@@ -59,7 +59,7 @@ async function ProfileComponent() {
                 {session.user.name || 'User Profile'}
               </h1>
 
-              <Badge className='bg-teal-600'>Role</Badge>
+              <Badge className='bg-teal-600'>{session.user.role}</Badge>
             </div>
             <p className='text-muted-foreground'>{session.user.email}</p>
           </div>
