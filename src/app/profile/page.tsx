@@ -17,6 +17,7 @@ import { ChangePasswordForm } from './_components/change-password-form'
 import { auth } from '@/lib/auth'
 import { headers } from 'next/headers'
 import { SessionManagement } from './_components/session-management'
+import { AccountDeletion } from './_components/account-deletion'
 
 export default async function ProfilePage() {
   return (
@@ -108,7 +109,15 @@ async function ProfileComponent() {
             <CardHeader>
               <CardTitle className='text-destructive'>Danger Zone</CardTitle>
             </CardHeader>
-            <CardContent>Account Deletion</CardContent>
+            <CardContent>
+              No accounts can be deleted other by WpAccPac. Users not able to
+              access the system will have a "Ban" imposed to prevent using the
+              application. The ban can be removed by WpAccPac if circumstances
+              change.
+              {session.user.email === 'admin@wpaccpac.org' && (
+                <AccountDeletion />
+              )}
+            </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
